@@ -1,6 +1,7 @@
 import os
 import PIL.Image
 import numpy as np
+import lxml
 from patchify import patchify
 from bs4 import BeautifulSoup
 from matplotlib import pyplot as plt
@@ -34,14 +35,23 @@ if __name__ == '__main__':
             data = f.read()
 
         xml_data = BeautifulSoup(data, "xml")
-        
-        for row in range(HE_patches.shape[0]):
-            for col in range(HE_patches.shape[1]):
-                HE_patch = HE_patches[row][col][0]
-                IHC_patch = IHC_patches[row][col][0]
-                
-                patch_label = xml_data.find('patch', {'x':str(col*224), 'y':str(row*224)})
-                if patch_label is not None:
-                    ratio = patch_label['ki67']
-                    plt.imsave(HE_output_directory + HE_slide + "-" + str(col*224) + "-" + str(row*224) + "-" + ratio + ".png", HE_patch)
-                    plt.imsave(IHC_output_directory + IHC_slide + "-" + str(col*224) + "-" + str(row*224) + "-" + ratio + ".png", IHC_patch)
+        patch_annotations = xml_data.find_all("patch")
+        count = 0
+        for patch_label in patch_annotations:
+            x = patch_label['x']
+            y = patch_label['y']
+
+            count += 1
+            print("Processing annotation number " + count)
+
+            row = int(int(y) / 224)
+            col = int(int(x) / 224)
+
+            HE_patch = HE_patches[row][col][0]
+            IHC_patch = IHC_patches[row][col][0]
+
+            ratio = patch_label['ki67']
+            plt.imsave(HE_output_directory + HE_slide + "-" + str(col * 224) + "-" + str(
+                row * 224) + "-" + ratio + ".png", HE_patch)
+            plt.imsave(IHC_output_directory + IHC_slide + "-" + str(col * 224) + "-" + str(
+                row * 224) + "-" + ratio + ".png", IHC_patch)
