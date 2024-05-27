@@ -3,6 +3,7 @@ import PIL.Image
 import numpy as np
 from patchify import patchify
 from bs4 import BeautifulSoup
+from matplotlib import pyplot as plt
 
 if __name__ == '__main__':
     PIL.Image.MAX_IMAGE_PIXELS = 3283937636
