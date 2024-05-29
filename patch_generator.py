@@ -15,11 +15,11 @@ if __name__ == '__main__':
     
     annotations = os.listdir(annotations_directory)
     slides = os.listdir(images_directory)
-    
     for xml_file in annotations:
         pair_id = xml_file.split('_')[0]
         HE_slide = [i for i in slides if pair_id + "_HE" in i][0]
         IHC_slide = [i for i in slides if pair_id + "_Ki67" in i][0]
+        print("Converting slide to RGB (may take a while)\n")
         HE_img = PIL.Image.open(images_directory + HE_slide)
         IHC_img = PIL.Image.open(images_directory + IHC_slide)
         # Convert the image to RGB
@@ -42,7 +42,8 @@ if __name__ == '__main__':
             y = patch_label['y']
 
             count += 1
-            print("Processing annotation number " + count)
+            if count%100 == 0:
+                print("Processing annotations from " + str(count))
 
             row = int(int(y) / 224)
             col = int(int(x) / 224)
